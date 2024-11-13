@@ -1,0 +1,48 @@
+services:
+  # the client has two endpoints other then the web sub portion
+  # /log which displays all messages received from the hub
+  # /resub which throws away the old subscription and try to create a new one.
+  web-sub-client:
+    container_name: web-sub-client
+    image: modfin/websub-client:latest
+    ports:
+      - "8081:8080"
+    environment:
+      - HOSTNAME=web-sub-client
+      - PORT=8080
+      - HUB_URL=http://hub:8080
+      - TOPIC=/a/topic
+
+  hub:
+    container_name: hub
+    build:
+      context: ./hub
+    ports:
+      - "8080:8080"
+    depends_on:
+      mysql:
+        condition: service_healthy # wait for the mysql container to be healthy
+    environment:
+      - MYSQL_HOST=mysql
+      # - MYSQL_DB_PATH=/app/mysql-db/hub.db
+      - MYSQL_PORT=3306
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=wordpass
+      - MYSQL_DATABASE=hubdb
+
+  mysql:
+    container_name: mysql
+    image: mysql:8.0
+    environment:
+      - MYSQL_ROOT_PASSWORD=wordpass
+      - MYSQL_DATABASE=hubdb
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./mysql-db:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysql", "-uroot", "-pwordpass", "-e", "SHOW DATABASES;"]
+      interval: 10s
+      retries: 5
+      timeout: 5s
+      start_period: 30s
