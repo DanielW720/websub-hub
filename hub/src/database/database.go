@@ -31,7 +31,7 @@ func CreateTable(db *sql.DB) error {
 		return fmt.Errorf("failed to create subscribers table: %w", err)
 	}
 
-	fmt.Println("subscribers table created successfully")
+	fmt.Println("Subscribers table created successfully")
 	return nil
 }
 

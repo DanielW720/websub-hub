@@ -24,7 +24,6 @@ services:
         condition: service_healthy # wait for the mysql container to be healthy
     environment:
       - MYSQL_HOST=mysql
-      # - MYSQL_DB_PATH=/app/mysql-db/hub.db
       - MYSQL_PORT=3306
       - MYSQL_USER=root
       - MYSQL_PASSWORD=wordpass
